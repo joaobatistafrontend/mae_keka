@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reconhecimento Facial</title>
+</head>
+<body>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.btn_capture }}
+        <button type="submit" name="btn_capture">Capturar Imagem</button>
+        <button type="submit" name="btn_stop" value="stop">Parar Captura</button>
+    </form>
+
+    <div id="video-container">
+        <video id="video" width="640" height="480" autoplay></video>
+    </div>
+
+    <script>
+        var video = document.getElementById('video');
+        var stopButton = document.querySelector('button[name="btn_stop"]');
+        var isCameraInitialized = false;
+
+        function initializeCamera() {
+            if (!isCameraInitialized) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        video.srcObject = stream;
+                        isCameraInitialized = true;
+                    })
+                    .catch(function (err) {
+                        console.log("An error occurred: " + err);
+                    });
+            }
+        }
+
+        // Inicializa a câmera quando a página é carregada
+        window.onload = function () {
+            initializeCamera();
+        };
+
+        stopButton.addEventListener('click', function () {
+            // Adicione lógica para parar a captura
+            fetch(window.location.href, { method: 'POST', body: 'btn_stop=stop' });
+        });
+    </script>
+</body>
+</html>
